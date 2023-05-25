@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-yaml
+        exclude: README.md
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+      - id: black
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.0
+    hooks:
+      - id: go-fmt
+      - id: no-go-testing
+      - id: golangci-lint
+        exclude: '^tmp/'
+      - id: go-unit-tests
+      # TODO: enhance go generate, because it doesn't work so far
+      - id: go-generate
+        args:
+          - "./..."
+        exclude: '^tmp/'
