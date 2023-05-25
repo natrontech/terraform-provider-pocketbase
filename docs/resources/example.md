@@ -29,5 +29,3 @@ resource "pocketbase_example" "example" {
 ### Read-Only
 
 - `id` (String) Example identifier
-
-
