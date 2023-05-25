@@ -1,6 +1,8 @@
 # Pocketbase Terraform Provider
 
-This repository is a *template* for a [Terraform](https://www.terraform.io) provider. It is intended as a starting point for creating Terraform providers, containing:
+This repository contains the code for the [Pocketbase](https://www.terraform.io/providers/natrontech/pocketbase/latest) Terraform provider.
+It is inteded to be used with the [Terraform](https://www.terraform.io) infrastructure as code tool.
+You can interact with your Pocketbase Backends using the provider.
 
 - A resource and a data source (`internal/provider/`),
 - Examples (`examples/`) and generated documentation (`docs/`),

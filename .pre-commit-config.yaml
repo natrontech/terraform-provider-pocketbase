@@ -18,3 +18,7 @@ repos:
       - id: golangci-lint
         exclude: '^tmp/'
       - id: go-unit-tests
+      - id: go-generate
+        args:
+          - "./..."
+        exclude: '^tmp/'
