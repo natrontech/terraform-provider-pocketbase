@@ -3,12 +3,12 @@
 page_title: "pocketbase Provider"
 subcategory: ""
 description: |-
-  
+  Pocketbase provider
 ---
 
 # pocketbase Provider
 
-
+Pocketbase provider
 
 ## Example Usage
 
@@ -28,4 +28,4 @@ provider "pocketbase" {
 
 - `endpoint` (String) The endpoint to use for the Pocketbase API (e.g. http://127.0.0.1:8090)
 - `identity` (String) The identity to use for the Pocketbase API (e.g. admin@natron.io)
-- `password` (String) The password to use for the Pocketbase API
+- `password` (String, Sensitive) The password to use for the Pocketbase API
