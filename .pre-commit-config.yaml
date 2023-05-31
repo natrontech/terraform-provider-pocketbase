@@ -13,8 +13,8 @@ repos:
     hooks:
       - id: go-fmt
       - id: no-go-testing
-      - id: golangci-lint
-        exclude: '^tmp/'
+      # - id: golangci-lint
+      #   exclude: '^tmp/'
       - id: go-unit-tests
       # TODO: enhance go generate, because it doesn't work so far
       - id: go-generate

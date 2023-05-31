@@ -166,7 +166,7 @@ func (p *PocketbaseProvider) Configure(ctx context.Context, req provider.Configu
 
 func (p *PocketbaseProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		// NewExampleResource,
+		NewCollectionResource,
 	}
 }
 
