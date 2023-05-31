@@ -166,13 +166,13 @@ func (p *PocketbaseProvider) Configure(ctx context.Context, req provider.Configu
 
 func (p *PocketbaseProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewExampleResource,
+		// NewExampleResource,
 	}
 }
 
 func (p *PocketbaseProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewExampleDataSource,
+		// NewExampleDataSource,
 	}
 }
 
