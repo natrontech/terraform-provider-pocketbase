@@ -7,7 +7,7 @@ terraform {
 }
 
 provider "pocketbase" {
-  endpoint = "http://127.0.0.1"
+  endpoint = "http://127.0.0.1:8090"
   identity = "admin@natron.io"
   password = "0123456789"
 }

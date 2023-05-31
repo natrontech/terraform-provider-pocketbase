@@ -9,8 +9,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/natrontech/pocketbase-client-go/pkg/client"
-	"github.com/natrontech/pocketbase-client-go/pkg/models"
 )
 
 var (
@@ -29,7 +30,30 @@ type collectionResource struct {
 }
 
 type collectionResourceModel struct {
-	models.Collection
+	Id         types.String                    `tfsdk:"id"`
+	Name       types.String                    `tfsdk:"name"`
+	Type       types.String                    `tfsdk:"type"`
+	Schema     []collectionResourceSchemaModel `tfsdk:"schema"`
+	System     types.Bool                      `tfsdk:"system"`
+	ListRule   types.Bool                      `tfsdk:"list_rules"`
+	ViewRule   types.Bool                      `tfsdk:"view_rules"`
+	CreateRule types.Bool                      `tfsdk:"create_rules"`
+	UpdateRule types.Bool                      `tfsdk:"update_rules"`
+	DeleteRule types.Bool                      `tfsdk:"delete_rules"`
+	Options    []types.List                    `tfsdk:"options"`
+	Indexes    []types.String                  `tfsdk:"indexes"`
+	Created    types.String                    `tfsdk:"created"`
+	Updated    types.String                    `tfsdk:"updated"`
+}
+
+type collectionResourceSchemaModel struct {
+	System   types.Bool   `tfsdk:"system"`
+	Id       types.String `tfsdk:"id"`
+	Name     types.String `tfsdk:"name"`
+	Type     types.String `tfsdk:"type"`
+	Required types.Bool   `tfsdk:"required"`
+	Unique   types.Bool   `tfsdk:"unique"`
+	Options  []types.List `tfsdk:"options"`
 }
 
 // Metadata returns the resource type name.
@@ -43,91 +67,10 @@ func (r *collectionResource) Schema(_ context.Context, _ resource.SchemaRequest,
 		Description: "A Pocketbase collection",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Description: "The ID of the collection",
-				Computed:    true,
+				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-			},
-			"created": schema.StringAttribute{
-				Description: "The creation date of the collection",
-				Computed:    true,
-			},
-			"updated": schema.StringAttribute{
-				Description: "The last update date of the collection",
-				Computed:    true,
-			},
-			"name": schema.StringAttribute{
-				Description: "The name of the collection",
-				Required:    true,
-			},
-			"type": schema.StringAttribute{
-				Description: "The type of the collection",
-				Required:    true,
-			},
-			"schema": schema.ListNestedAttribute{
-				Description: "The schema of the collection",
-				Required:    true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"system": schema.BoolAttribute{
-							Description: "Whether the field is a system field",
-							Required:    true,
-						},
-						"id": schema.StringAttribute{
-							Description: "The ID of the field",
-							Required:    true,
-						},
-						"name": schema.StringAttribute{
-							Description: "The name of the field",
-							Required:    true,
-						},
-						"type": schema.StringAttribute{
-							Description: "The type of the field",
-							Required:    true,
-						},
-						"required": schema.BoolAttribute{
-							Description: "Whether the field is required",
-							Required:    true,
-						},
-						"unique": schema.BoolAttribute{
-							Description: "Whether the field is unique",
-							Required:    true,
-						},
-						"options": schema.ListAttribute{
-							Description: "The options of the field",
-							Required:    true,
-						},
-					},
-				},
-			},
-			"list_rule": schema.StringAttribute{
-				Description: "The list rule of the collection",
-				Required:    true,
-			},
-			"view_rule": schema.StringAttribute{
-				Description: "The view rule of the collection",
-				Required:    true,
-			},
-			"create_rule": schema.StringAttribute{
-				Description: "The create rule of the collection",
-				Required:    true,
-			},
-			"update_rule": schema.StringAttribute{
-				Description: "The update rule of the collection",
-				Required:    true,
-			},
-			"delete_rule": schema.StringAttribute{
-				Description: "The delete rule of the collection",
-				Required:    true,
-			},
-			"options": schema.ListAttribute{
-				Description: "The options of the collection",
-				Required:    true,
-			},
-			"indexes": schema.ListAttribute{
-				Description: "The indexes of the collection",
-				Required:    true,
 			},
 		},
 	}
@@ -152,63 +95,72 @@ func (r *collectionResource) Configure(_ context.Context, req resource.Configure
 }
 
 // Create a new resource.
-func (r *collectionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	// Retrieve values from plan
-	var plan collectionResourceModel
-	diags := req.Plan.Get(ctx, &plan)
+func (e *collectionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var data collectionResourceModel
+
+	diags := req.Config.Get(ctx, &data)
 	resp.Diagnostics.Append(diags...)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// Generate API request body from plan
-	var collectionRequest models.CollectionCreateRequest
-	collectionRequest.Id = &plan.Id
-	collectionRequest.Name = plan.Name
-	collectionRequest.Type = plan.Type
-	collectionRequest.Schema = plan.Schema
-	collectionRequest.ListRule = &plan.ListRule
-	collectionRequest.ViewRule = &plan.ViewRule
-	collectionRequest.CreateRule = &plan.CreateRule
-	collectionRequest.UpdateRule = &plan.UpdateRule
-	collectionRequest.DeleteRule = &plan.DeleteRule
-	collectionRequest.Options = &plan.Options
-	collectionRequest.Indexes = &plan.Indexes
+	// Create resource using 3rd party API.
 
-	// Create the resource
-	collection, err := r.client.CreateCollection(&collectionRequest)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error creating collection",
-			fmt.Sprintf("Error creating collection: %s", err),
-		)
-		return
-	}
+	data.Id = types.StringValue("example-id")
 
-	// Set the ID of the created resource
-	diags = resp.State.Set(ctx, collectionResourceModel{
-		// TODO: Test if it works
-		Collection: *collection,
-	})
+	tflog.Trace(ctx, "created a resource")
+
+	diags = resp.State.Set(ctx, &data)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 }
 
 // Read resource information.
-func (r *collectionResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	// TODO: Implement
+func (e *collectionResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var data collectionResourceModel
+
+	diags := req.State.Get(ctx, &data)
+	resp.Diagnostics.Append(diags...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Read resource using 3rd party API.
+
+	diags = resp.State.Set(ctx, &data)
+	resp.Diagnostics.Append(diags...)
 }
 
 // Update a resource.
-func (r *collectionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// TODO: Implement
+func (e *collectionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var data collectionResourceModel
+
+	diags := req.Plan.Get(ctx, &data)
+	resp.Diagnostics.Append(diags...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Update resource using 3rd party API.
+
+	diags = resp.State.Set(ctx, &data)
+	resp.Diagnostics.Append(diags...)
 }
 
 // Delete a resource.
-func (r *collectionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	// TODO: Implement
+func (e *collectionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var data collectionResourceModel
+
+	diags := req.State.Get(ctx, &data)
+	resp.Diagnostics.Append(diags...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Delete resource using 3rd party API.
 }
 
 // Import a resource.
