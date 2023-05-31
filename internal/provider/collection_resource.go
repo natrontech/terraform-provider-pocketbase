@@ -61,7 +61,7 @@ func (r *collectionResource) Metadata(_ context.Context, req resource.MetadataRe
 	resp.TypeName = req.ProviderTypeName + "_collection"
 }
 
-// Schema defines the schem for the resource
+// Schema defines the schem for the resource.
 func (r *collectionResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Description: "A Pocketbase collection",
