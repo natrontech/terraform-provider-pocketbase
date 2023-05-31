@@ -1,5 +1,7 @@
 # Pocketbase Terraform Provider
 
+> Pocketbase doesn't support bootstrapping over REST yet, so you'll need to create the admin user manually after creating a pocketbase backend.
+
 This repository contains the code for the [Pocketbase](https://www.terraform.io/providers/natrontech/pocketbase/latest) Terraform provider.
 It is inteded to be used with the [Terraform](https://www.terraform.io) infrastructure as code tool.
 You can interact with your Pocketbase Backends using the provider.
